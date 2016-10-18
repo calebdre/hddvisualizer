@@ -1,10 +1,8 @@
-package com.æhddv;
+package com.hddv;
 
 
-/**
- * Hello world!
- *
- */
+import static spark.Spark.get;
+
 public class App 
 {
     public static void main( String[] args )

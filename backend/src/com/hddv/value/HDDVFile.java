@@ -1,4 +1,4 @@
-package com.æhddv.value;
+package com.hddv.value;
 
 public class HDDVFile {
     private String name;
