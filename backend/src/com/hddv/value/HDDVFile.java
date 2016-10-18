@@ -1,6 +1,6 @@
 package com.hddv.value;
 
-public class HDDScanner {
+public class HDDVFile {
     private String name;
     private double size;
     private String dateLastModified;
@@ -16,6 +16,8 @@ public class HDDScanner {
         this.path = path;
         this.extension = extension;
     }
+
+
 
     public String getName() {
         return name;
