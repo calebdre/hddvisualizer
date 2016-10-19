@@ -8,22 +8,24 @@ public class HDDScanner
 
     public static void main( String[] args )
     {
+        int totalData = 0;
         System.out.println("Starting Scan");
-        list(new File("/Users/HarshaGoli/"));
+        list(new File("/Users/HarshaGoli/Applications/"), totalData);
     }
 
-    public static void list(File file) {
-        System.out.println(file.getName());
+    public static long list(File file, long totalData) {
         File[] children = file.listFiles();
         for (File child : children) {
-            //TODO: Add if statement to stop recursive if the child is not a folder
-
             if (child.isDirectory()){
-                list(child);
+                totalData += list(child, totalData);
             } else {
-                System.out.println(child.getTotalSpace());
+                totalData += child.getTotalSpace();
             }
         }
+
+        System.out.println(file.getName()+" is "+ totalData);
+
+        return totalData;
     }
 
 }
