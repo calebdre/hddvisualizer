@@ -1,1 +1,153 @@
-this is the index page
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>HDD Visualizer</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+		<style>
+			.container{
+				max-width: 70%;
+				position: relative;
+			}
+
+			.info-area{
+				min-height:600px;
+			}
+
+			.btn{
+				border-radius:50px;
+				width:45px;
+				height:45px;
+				line-height:48px;
+				font-size:21px;
+				border:1px solid #eee;
+				text-align:center;
+				cursor:pointer;
+				transition:all .25s ease-in-out;
+			}
+
+			.popup-btn{
+				visibility:hidden;
+			}
+
+			.action-btn{
+				font-weight:400;
+				line-height:43px;
+				background-color:#ddd;
+				border:1px solid #ccc;
+				position:relative;
+				z-index:100;
+			}
+			
+			.action-btn:hover{
+				background-color:#eee;
+				color:#111;
+			}
+
+			.analyze-btn{
+				background-color:#5C6BC0;
+				border:1px solid #8897f1;
+				color:#fff;
+				position:absolute;
+				right:0;
+				top:0;
+				z-index:1;
+			}
+
+			.analyze-btn-position{
+				right:40px;
+				top:40px;
+				visibility:visible;
+			}
+
+			.analyze-btn:hover{
+				background-color:#6a7bdc;
+				border:1px solid #6979de;
+			}
+
+			.settings-btn{
+				background-color: #E57373;
+				border:1px solid #ef6868;
+				color:#fff;
+				position:absolute;
+				right:0;
+				top:0;
+				z-index:1;
+				
+			}
+			
+			.settings-btn-position{
+				right:60px;
+				top:-10px;
+				visibility:visible;
+			}
+
+			.settings-btn:hover{
+				background-color: #ef6868;
+				border:1px solid #E57373;
+			}
+
+			.action-area{
+				position:absolute;
+				right:0;
+				bottom:0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="info-area">
+
+			</div>
+			<div class="action-area">
+				<div class="btn analyze-btn popup-btn"><i class="fa fa-bar-chart"></i></div>
+				<div class="btn settings-btn popup-btn"><i class="fa fa-cog"></i></div>
+				<div class="action-btn btn">+</div>
+			</div>
+		</div>
+		<script   src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script>
+			class FileModel {
+				startRetrieval(){
+					// POST to start
+				}
+
+				retrieveFiles(){
+					// GET to check status of HDD parsing
+				}
+			}
+			
+			// event listener interface
+			class Listener{
+				listen(){
+					throw new "Not implemented error";
+				}
+			}
+
+			class AnalyzeButtonListener extends Listener {
+				listen(){
+
+				}
+			}
+
+			class HoverButtonListener extends Listener {
+				constructor(buttonNames){
+					super();
+					this.btns = buttonNames;
+				}
+
+				listen(){
+					$('.action-btn').click(function(e){
+						for(var i in this.btns){
+							var btn = this.btns[i];
+							console.log(btn)
+							$('.' + btn + "-btn").toggleClass(btn + "-btn-position");
+						}
+					}.bind(this));
+				}
+			}
+
+			new HoverButtonListener(['analyze', 'settings']).listen();
+		</script>
+	</body>
+</html>
