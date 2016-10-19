@@ -17,7 +17,12 @@ public class HDDScanner
         File[] children = file.listFiles();
         for (File child : children) {
             //TODO: Add if statement to stop recursive if the child is not a folder
-            list(child);
+
+            if (child.isDirectory()){
+                list(child);
+            } else {
+                System.out.println(child.getTotalSpace());
+            }
         }
     }
 
