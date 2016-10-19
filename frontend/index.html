@@ -1,1 +1,26 @@
-this is the index page
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>HDD Visualizer</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div class="container">
+			<div class="info-area">
+
+			</div>
+			<div class="action-area">
+				<div class="btn analyze-btn popup-btn"><i class="fa fa-bar-chart"></i></div>
+				<div class="btn settings-btn popup-btn"><i class="fa fa-cog"></i></div>
+				<div class="action-btn btn">+</div>
+			</div>
+		</div>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script src="app.js"></script>
+		<script>
+			new HoverButtonListener(['analyze', 'settings']).listen();
+		</script>
+	</body>
+</html>
