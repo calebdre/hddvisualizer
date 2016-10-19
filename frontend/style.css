@@ -1,0 +1,87 @@
+.container{
+				max-width: 70%;
+				position: relative;
+			}
+
+			.info-area{
+				min-height:600px;
+			}
+
+			.btn{
+				border-radius:50px;
+				width:45px;
+				height:45px;
+				line-height:48px;
+				font-size:21px;
+				border:1px solid #eee;
+				text-align:center;
+				cursor:pointer;
+				transition:all .25s ease-in-out;
+			}
+
+			.popup-btn{
+				visibility:hidden;
+			}
+
+			.action-btn{
+				font-weight:400;
+				line-height:43px;
+				background-color:#ddd;
+				border:1px solid #ccc;
+				position:relative;
+				z-index:100;
+			}
+			
+			.action-btn:hover{
+				background-color:#eee;
+				color:#111;
+			}
+
+			.analyze-btn{
+				background-color:#5C6BC0;
+				border:1px solid #8897f1;
+				color:#fff;
+				position:absolute;
+				right:0;
+				top:0;
+				z-index:1;
+			}
+
+			.analyze-btn-position{
+				right:40px;
+				top:40px;
+				visibility:visible;
+			}
+
+			.analyze-btn:hover{
+				background-color:#6a7bdc;
+				border:1px solid #6979de;
+			}
+
+			.settings-btn{
+				background-color: #E57373;
+				border:1px solid #ef6868;
+				color:#fff;
+				position:absolute;
+				right:0;
+				top:0;
+				z-index:1;
+				
+			}
+			
+			.settings-btn-position{
+				right:60px;
+				top:-10px;
+				visibility:visible;
+			}
+
+			.settings-btn:hover{
+				background-color: #ef6868;
+				border:1px solid #E57373;
+			}
+
+			.action-area{
+				position:absolute;
+				right:0;
+				bottom:0;
+			}
