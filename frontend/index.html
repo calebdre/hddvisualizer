@@ -4,23 +4,38 @@
 		<meta charset="UTF-8">
 		<title>HDD Visualizer</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
 		<div class="container">
 			<div class="info-area">
+				<div class="login section">
+					<h2 class="title">Login</h2>
 
+					<div class="form-group">
+						<label for="username">Username</label>
+						<input type="username" class="form-control" id="username" placeholder="email">
+					</div>
+					<div class="form-group">
+						<label for="username">Password</label>
+						<input type="password" class="form-control" id="password" placeholder="password">
+					</div>
+
+					<button type="submit" class="btn btn-default">Submit</button>
+				</div>
 			</div>
 			<div class="action-area">
 				<div class="btn analyze-btn popup-btn"><i class="fa fa-bar-chart"></i></div>
 				<div class="btn settings-btn popup-btn"><i class="fa fa-cog"></i></div>
-				<div class="action-btn btn">+</div>
+				<div class="action-btn circle-btn">+</div>
 			</div>
 		</div>
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 		<script src="app.js"></script>
 		<script>
 			new HoverButtonListener(['analyze', 'settings']).listen();
+			$('.container').first().css('height', window.innerHeight + "px");
 		</script>
 	</body>
 </html>
