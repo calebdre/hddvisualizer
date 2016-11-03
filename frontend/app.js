@@ -31,8 +31,9 @@ class HoverButtonListener extends Listener {
 		$('.action-btn').click(function(e){
 			for(var i in this.btns){
 				var btn = this.btns[i];
-				console.log(btn)
-				$('.' + btn + "-btn").toggleClass(btn + "-btn-position");
+				$('.' + btn + "-btn")
+					.toggleClass(btn + "-btn-position")
+					.toggleClass("popup-btn");
 			}
 		}.bind(this));
 	}
