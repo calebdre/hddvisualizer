@@ -39,7 +39,8 @@ public class Parser {
 		System.out.println("lastModifiedTime: " + attr.lastModifiedTime());
 		System.out.println("size: " + attr.size());
 		System.out.println("extension: " + ext1);
-		    
+	
+	//converting HDDVFile object properties to json
         List<HDDVFile> list = new ArrayList<HDDVFile>();
         for (int i = 0; i < 20; i++) {
                 list.add(new HDDVFile(files.get(3).toString(), attr.size(), attr.lastModifiedTime().toString(),attr.creationTime().toString(),files.get(3).toString(), ext1));
