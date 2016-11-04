@@ -19,7 +19,8 @@ import org.apache.commons.io.FilenameUtils;
 public class Parser {
 	public static void main(String [] args) throws IOException{
 
-		System.out.println("enter full directory: ");
+	//Main method for testing
+	System.out.println("enter full directory: ");
         Scanner in = new Scanner(System.in);
         String input = in.nextLine();
         System.out.println(parse(input));
