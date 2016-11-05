@@ -1,0 +1,70 @@
+li{
+	list-style: none;
+}
+
+.container{
+	max-width: 80%;
+	margin: 0 auto;
+	position: relative;
+	padding:20px 40px 20px 40px;
+	border-left:1px solid #ddd;
+	border-right:1px solid #ddd;
+	overflow: hidden;
+}
+
+.circle-btn{
+	border-radius:50px;
+	width:45px;
+	height:45px;
+	line-height:48px;
+	font-size:21px;
+	border:1px solid #eee;
+	text-align:center;
+	cursor:pointer;
+	transition:all .25s ease-in-out;
+}
+
+.popup-btn{
+	visibility:hidden;
+}
+
+.action-btn{
+	font-weight:400;
+	line-height:43px;
+	background-color:#ddd;
+	border:1px solid #ccc;
+	position:relative;
+	z-index:100;
+}
+
+
+.action-area{
+	position:absolute;
+	right:60px;
+	bottom:40px;
+	padding:0;
+}
+
+.action-area .btn{
+	border-radius: 100px;
+	margin-bottom: 10px;
+	margin-left:4px;
+}
+
+.section .title{
+	margin-bottom: 20px;
+}
+
+.login.section{
+	display: none;
+}
+
+.section{
+	position:relative;
+	right:105%;
+	transition: all .4s ease-in-out;
+}
+
+.section.visible{
+	right:0%;
+}

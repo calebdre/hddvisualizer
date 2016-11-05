@@ -9,6 +9,7 @@ li{
 	padding:20px 40px 20px 40px;
 	border-left:1px solid #ddd;
 	border-right:1px solid #ddd;
+	overflow: hidden;
 }
 
 .circle-btn{
@@ -58,11 +59,12 @@ li{
 	display: none;
 }
 
-.info-area{
-	
+.section{
+	position:relative;
+	right:105%;
+	transition: all .4s ease-in-out;
 }
 
-.section{
-	
-	
+.section.visible{
+	right:0%;
 }

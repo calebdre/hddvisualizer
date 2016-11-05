@@ -6,8 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
 public class Parser {
 
 	public List<HDDVFile> parse(String path) throws IOException, IllegalArgumentException{
@@ -22,25 +23,27 @@ public class Parser {
 		List<HDDVFile> list = new ArrayList<>();
 
         for (File file : files) {
-            if(file.isDirectory()){
-                list.addAll(parseDirectory(file));
-            }else{
-                list.add(parseFile(file));
-            }
+            list.addAll(parseFile(file));
         }
        
 		return list;
 	}
 
-    private List<HDDVFile> parseDirectory(File directory) throws IOException {
+    private List<HDDVFile> parseDirectory(File directory) {
         File[] files = new File(directory.getAbsolutePath()).listFiles();
-        return new ArrayList<>(Arrays.asList(files))
-                .stream()
-                .map(this::parseFile)
-                .collect(Collectors.toList());
+        List<HDDVFile> hddvFiles = new ArrayList<>();
+        for(File f: files){
+            hddvFiles.addAll(parseFile(f));
+        }
+
+        return hddvFiles;
     }
 
-    private HDDVFile parseFile(File file) {
+    private List<HDDVFile> parseFile(File file) {
+        if(file.isDirectory()){
+            return parseDirectory(file);
+        }
+
         String fileName = file.getName();
 
         String extension = "";
@@ -51,14 +54,13 @@ public class Parser {
 
         String absolutePath = file.getAbsolutePath();
 
-        return new HDDVFile(
+        return Collections.singletonList(new HDDVFile(
                 fileName,
                 file.length(),
                 String.valueOf(file.lastModified()),
                 absolutePath,
-                extension);
+                extension));
     }
-	
 }
 
 
