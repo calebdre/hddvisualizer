@@ -11,8 +11,15 @@ public class App {
         Spark.staticFiles.location("/public");
 
         Spark.get("/analyze", (request, response) -> {
-            String path = "/Users/caleblewis/downloads/"; // just for testing
+            // for testing because the front-end needs to be able
+            // to communicate w/o being rendered by the server
+            response.header("Access-Control-Allow-Origin", "*");
+
+            // just for testing...also, this is platform independent
+            String path = "/Users/" + System.getProperty("user.name") + "/Downloads";
             return new Parser().parse(path);
         }, new JsonTransformer<List<HDDVFile>>());
+
+        System.out.println("Please visit http://localhost:4567");
 	}
 }

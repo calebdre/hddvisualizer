@@ -32,6 +32,7 @@ public class Parser {
     private List<HDDVFile> parseDirectory(File directory) {
         File[] files = new File(directory.getAbsolutePath()).listFiles();
         List<HDDVFile> hddvFiles = new ArrayList<>();
+        if(files == null) return hddvFiles;
         for(File f: files){
             hddvFiles.addAll(parseFile(f));
         }

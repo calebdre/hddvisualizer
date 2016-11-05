@@ -88,13 +88,87 @@
 			</ul>
 		</div>
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script src="https://d3js.org/d3.v3.js"></script>
 		<script src="app.js"></script>
 		<script>
 			new HoverButtonListener(['analyze', 'settings','share','filter']).listen();
 			$('.container').first().css('height', window.innerHeight + "px");
-			class LoginView {
+            var width = 1000;
+            var height = 1000;
+			var svg = d3.select(".section.analysis").append("svg")
+                    .attr('width', width)
+                    .attr('height',height);
 
-			}
+            var force = d3.layout.force()
+                    .gravity(.05)
+                    .distance(100)
+                    .charge(-100)
+                    .size([width, height]);
+
+            d3.json("http://localhost:4567/analyze", function(json){
+                var nodes = [];
+                var linksMap = {};
+                var links = [];
+
+                for(var i = 0; i < json.length; i++){
+                    var file = json[i];
+                    nodes.push({"name": file.name});
+                    if(!linksMap.hasOwnProperty(file.path)){
+                        linksMap[file.path] = [];
+                    }
+
+                    linksMap[file.path].push(i);
+                }
+
+                for(var key in linksMap){
+                    index = nodes.length;
+                    nodes.push(key);
+                    for(var i = 0; i < linksMap[key].length; i++){
+                        links.push({
+                            "source": { "index" : index},
+                            "target": { "index" : linksMap[key][i]},
+                            "weight": 1
+                        });
+                    }
+                }
+
+                force.nodes(nodes)
+                        .links(links)
+                        .start();
+
+                var link = svg.selectAll(".link")
+                        .data(links)
+                        .enter().append("line")
+                        .attr("class", "link")
+                        .style("stroke-width", function(){
+                            return 1;
+                        });
+
+                var node = svg.selectAll(".node")
+                        .data(nodes)
+                        .enter().append("g")
+                        .attr("class", "node")
+                        .call(force.drag);
+
+                node.append("circle")
+                        .attr("r","5");
+
+                node.append("text")
+                        .attr("dx", 12)
+                        .attr("dy", ".35em")
+                        .text(function(d) { return d.name });
+
+                force.on("tick", function() {
+                    link.attr("x1", function(d) {
+                        return d.source.x;
+                    })
+                            .attr("y1", function(d) { return d.source.y; })
+                            .attr("x2", function(d) { return d.target.x; })
+                            .attr("y2", function(d) { return d.target.y; });
+
+                    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+                });
+            });
 		</script>
 	</body>
 </html>
