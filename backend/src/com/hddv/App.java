@@ -14,6 +14,7 @@ public class App {
             // for testing because the front-end needs to be able
             // to communicate w/o being rendered by the server
             response.header("Access-Control-Allow-Origin", "*");
+            response.header("Content-Type", "application/json");
 
             // just for testing...also, this is platform independent
             String path = "/Users/" + System.getProperty("user.name") + "/Downloads";
