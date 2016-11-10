@@ -5,96 +5,60 @@
 		<title>HDD Visualizer</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<div class="container">
-			<div class="info-area">
-				<div class="login section">
-					<h2 class="title">Login</h2>
+		<div class="clearfix">
+            <ul class="sidebar">
+                <li class="top header">HDD Visualizer</li>
 
-					<div class="form-group">
-						<label for="username">Username</label>
-						<input type="username" class="form-control" id="username" placeholder="email">
-					</div>
-					<div class="form-group">
-						<label for="username">Password</label>
-						<input type="password" class="form-control" id="password" placeholder="password">
-					</div>
+                <li class="header">Analysis</li>
+                <li>Start Analysis</li>
+                <li class="disabled">Filter</li>
+                <li class="disabled">Share</li>
+                <li class="disabled">Periodic</li>
+                <li class="disabled">Delete File</li>
+                <li class="disabled">Change Permissions</li>
 
-					<button id="login-submit" type="submit" class="btn btn-default">Submit</button>
-				</div>
-				<div class="analysis-empty section">
-					<div class="well">
-						<p>Welcome to HDDVisualizer.</p>
-						<p>You don't have an analysis right now. Please press the plus button to start an analysis.</p>
-					</div>
-				</div>
-				<div class="section analysis visible">
-					
-				</div>
-				<div class="share section">
-					<h2 class="title">Share Your Analysis</h2>
-					<div class="form-group">
-						<label for="files">Files:</label>
-						<select class="form-control" name="files" id="files" multiple>
-							<option value="file1">file1</option>
-							<option value="file1">file1</option>
-							<option value="file1">file1</option>
-							<option value="file1">file1</option>
-							<option value="file1">file1</option>
-							<option value="file1">file1</option>
-							<option value="file1">file1</option>
-						</select>
-					</div>
+                <li class="header">Settings</li>
+                <!-- modal options: bubble color, window size,  -->
+                <li>Analysis Interface</li>
+                <!-- modal options: language, font size, boot on start  -->
+                <li>Application</li>
+            </ul>
+            <div class="content">
+                <div class="analysis">
+                    <div class="analysis"></div>
+                    <div class="stats">
+                        <figure class="stat">
+                            <h2>--</h2>
+                            <figcaption>Directories</figcaption>
+                        </figure>
 
-					<div class="form-group">
-						<label for="share-to-user">User</label>
-						<input type="text" class="form-control" id="share-to-user" placeholder="type the username to share to'">
-					</div>
+                        <figure class="stat">
+                            <h2>--</h2>
+                            <figcaption>Files</figcaption>
+                        </figure>
 
-					<button id="share-submit" type="submit" class="btn btn-default">Submit</button>
-				</div>
-
-				<div class="filter section">
-					<h2 class="title">Filter by Size</h2>
-					<div class="form-group">
-						<label for="min-size">Minimum Size</label>
-						<select name="min-size" id="min-size" class="form-control">
-							<opten value="2">2mb</opten>
-							<opten value="50">50mb</opten>
-							<opten value="100">100mb</opten>
-							<opten value="1000">1000mb</opten>
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="max-size">Maximum Size</label>
-						<select name="max-size" id="max-size" class="form-control">
-							<opten value="2">2mb</opten>
-							<opten value="50">50mb</opten>
-							<opten value="100">100mb</opten>
-							<opten value="1000">1000mb</opten>
-						</select>
-					</div>
-					<button id="filter-submit" type="submit" class="btn btn-default">Submit</button>
-				</div>
-			</div>
-			<ul class="action-area">
-				<li class="analyze-btn popup-btn"> <button class="btn"> <i class="fa fa-bar-chart"></i></button></li>
-				<li class="share-btn popup-btn"> <button class="btn"> <i class="fa fa-share"></i></button></li>
-				<li class="filter-btn popup-btn"> <button class="btn"> <i class="fa fa-filter"></i></button></li>
-				<li class="settings-btn popup-btn"> <button class="btn"> <i class="fa fa-cog"></i></button></li>
-				<li class="action-btn circle-btn">+</li>
-			</ul>
+                        <figure class="stat">
+                            <h2>--</h2>
+                            <figcaption>Memory</figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
 		</div>
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
         <script src="https://d3js.org/d3.v3.js"></script>
         <script src="jsnetworkx.js"></script>
-        <!-- possible alternative: http://graphalchemist.github.io/Alchemy/#/examples-->
 		<script src="app.js"></script>
 		<script>
-			new HoverButtonListener(['analyze', 'settings','share','filter']).listen();
-			$('.container').first().css('min-height', window.innerHeight + "px");
+            var analysisHeight = window.innerHeight * .8;
+            var statsHeight = window.innerHeight * .2;
+
+			$(".analysis .analysis").first().css('min-height', analysisHeight + "px");
+            $('.sidebar').css("height", window.innerHeight + "px");
 
             $.get("http://localhost:4567/analyze", function(data){
                 var G = new jsnx.Graph();
@@ -124,8 +88,8 @@
 
             function draw(G){
                 jsnx.draw(G, {
-                    element: ".section.analysis",
-                    height:500,
+                    element: ".analysis .analysis",
+                    height: analysisHeight,
                     withLabels:true,
                     labels:function(d){
                       return d.data.name;
