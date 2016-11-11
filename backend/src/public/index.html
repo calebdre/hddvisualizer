@@ -6,6 +6,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/sweetalert2/5.3.2/sweetalert2.min.css">
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
@@ -30,18 +31,43 @@
             <div class="content">
                 <div class="analysis">
                     <div class="analysis"></div>
+                    <div class="selected-file-info">
+                        <figure class="selected-file name">
+                            <h2>--</h2>
+                            <figcaption>Name</figcaption>
+                        </figure>
+                        <figure class="selected-file dir">
+                            <h2>--</h2>
+                            <figcaption>Directory</figcaption>
+                        </figure>
+
+                        <figure class="selected-file modified">
+                            <h2>--</h2>
+                            <figcaption>Last Used</figcaption>
+                        </figure>
+
+                        <figure class="selected-file size">
+                            <h2>--</h2>
+                            <figcaption>Size</figcaption>
+                        </figure>
+
+                        <figure class="selected-file proportion">
+                            <h2>--</h2>
+                            <figcaption>Proportion</figcaption>
+                        </figure>
+                    </div>
                     <div class="stats">
-                        <figure class="stat">
+                        <figure class="stat dirs">
                             <h2>--</h2>
                             <figcaption>Directories</figcaption>
                         </figure>
 
-                        <figure class="stat">
+                        <figure class="stat files">
                             <h2>--</h2>
                             <figcaption>Files</figcaption>
                         </figure>
 
-                        <figure class="stat">
+                        <figure class="stat memory">
                             <h2>--</h2>
                             <figcaption>Memory</figcaption>
                         </figure>
@@ -52,6 +78,8 @@
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
         <script src="https://d3js.org/d3.v3.js"></script>
         <script src="jsnetworkx.js"></script>
+        <script src="https://cdn.jsdelivr.net/sweetalert2/5.3.2/sweetalert2.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.16.0/moment.min.js"></script>
 		<script src="app.js"></script>
 		<script>
             var analysisHeight = window.innerHeight * .8;
@@ -63,12 +91,17 @@
             $.get("http://localhost:4567/analyze", function(data){
                 var G = new jsnx.Graph();
                 var edgeData = [];
+                var numOfdirs = 0;
+                var numOfFiles = 0;
+                var memory = 0;
+
                for(var i = 0; i < data.length; i++){
                    var file = data[i];
                    G.addNode(i, file);
                    var edgeIndex;
                    var path = file.path.substr(0, file.path.lastIndexOf("/") + 1);
                    if(edgeData.indexOf(path) === -1){
+                       numOfdirs++;
                        edgeIndex = data.length + edgeData.push(path) + 1;
                        G.addNode(edgeIndex, {
                            name: path,
@@ -76,14 +109,37 @@
                            index: edgeIndex
                        });
                    }else{
+                       numOfFiles++;
+                       memory += file.size;
                        edgeIndex = edgeData.indexOf(path) + data.length + 1;
                    }
 
                    G.addEdge(i, edgeIndex);
-                   console.log({target: i, parent: edgeIndex});
                }
 
                 draw(G);
+
+                $('.stat.files').find("h2").text(numOfFiles);
+                $('.stat.dirs').find("h2").text(numOfdirs);
+                $('.stat.memory').find("h2").text(memory);
+
+                d3.selectAll(".node")
+                        .on("click", function(d){
+                            if(d.hasOwnProperty("isPath")) return;
+                            d = d.data;
+                            var path = d.path.substr(0, d.path.lastIndexOf("/"));
+                            var name = "";
+                            if(d.name.length > 30){
+                                name = d.name.substr(0, 30) + "...";
+                            }else{
+                                name = d.name;
+                            }
+                            $('.selected-file-info .name').find('h2').text(name);
+                            $('.selected-file-info .dir').find('h2').text(path);
+                            $('.selected-file-info .size').find('h2').text(d.size + "kb");
+                            $('.selected-file-info .modified').find('h2').text(moment.unix(d.dateLastModified / 1000).fromNow());
+                            $('.selected-file-info .proportion').find('h2').text(Math.ceil((d.size / memory) * 100) + "%");
+                        })
             });
 
             function draw(G){
@@ -95,11 +151,14 @@
                       return d.data.name;
                     },
                     nodeAttr:{
-
+                        r: function(d){
+                            var data = d.data;
+                            if(data.hasOwnProperty("isPath")) return 10;
+                            return data.size / 550000;
+                        }
                     },
                     nodeStyle:{
                         fill: function(d){
-                            console.log(d.data);
                             if(d.data.hasOwnProperty("isPath")){
                                 return "blue";
                             }else{

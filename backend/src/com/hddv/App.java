@@ -21,6 +21,20 @@ public class App {
             return new Parser().parse(path);
         }, new JsonTransformer<List<HDDVFile>>());
 
+        Spark.put("/file/permission", ((request, response) -> {
+            String path = request.params("path");
+            String permission = request.params("permission");
+
+            FileOperator.changePermission(path, permission);
+            return true;
+        }));
+
+        Spark.delete("/file/delete", (request, response) -> {
+            String path = request.params().get("path");
+            FileOperator.delete(path);
+            return true;
+        });
+
         System.out.println("Please visit http://localhost:4567");
 	}
 }

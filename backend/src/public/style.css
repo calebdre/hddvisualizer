@@ -70,9 +70,9 @@ li{
     padding-left:16px;
 }
 
-.stats .stat{
+.stats .stat, .selected-file-info .selected-file{
     display:inline-block;
-    margin:0 20px;
+    margin:10px 20px;
     text-align: center;
 }
 
@@ -83,6 +83,11 @@ li{
 .stat figcaption{
     font-size:.9em;
     color:#bbb;
+}
+
+.selected-file h2{
+    font-size:18px;
+    word-wrap: break-word;
 }
 
 .analysis .analysis{
