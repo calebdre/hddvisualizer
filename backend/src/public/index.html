@@ -19,8 +19,8 @@
                 <li class="disabled">Filter</li>
                 <li class="disabled">Share</li>
                 <li class="disabled">Periodic</li>
-                <li class="disabled">Delete File</li>
-                <li class="disabled">Change Permissions</li>
+                <li id="delete">Delete File</li>
+                <li id="permission">Change Permissions</li>
 
                 <li class="header">Settings</li>
                 <!-- modal options: bubble color, window size,  -->
@@ -125,21 +125,51 @@
 
                 d3.selectAll(".node")
                         .on("click", function(d){
-                            if(d.hasOwnProperty("isPath")) return;
-                            d = d.data;
-                            var path = d.path.substr(0, d.path.lastIndexOf("/"));
+                            if(d.data.hasOwnProperty("isPath")) return;
+                            data = d.data;
+                            var path = data.path.substr(0, data.path.lastIndexOf("/"));
                             var name = "";
-                            if(d.name.length > 30){
-                                name = d.name.substr(0, 30) + "...";
+                            if(data.name.length > 30){
+                                name = data.name.substr(0, 30) + "...";
                             }else{
-                                name = d.name;
+                                name = data.name;
                             }
                             $('.selected-file-info .name').find('h2').text(name);
                             $('.selected-file-info .dir').find('h2').text(path);
-                            $('.selected-file-info .size').find('h2').text(d.size + "kb");
-                            $('.selected-file-info .modified').find('h2').text(moment.unix(d.dateLastModified / 1000).fromNow());
-                            $('.selected-file-info .proportion').find('h2').text(Math.ceil((d.size / memory) * 100) + "%");
-                        })
+                            $('.selected-file-info .size').find('h2').text(data.size + "kb");
+                            $('.selected-file-info .modified').find('h2').text(moment.unix(data.dateLastModified / 1000).fromNow());
+                            $('.selected-file-info .proportion').find('h2').text(Math.ceil((data.size / memory) * 100) + "%");
+
+                            $('#delete').off().click(function(e){
+                                swal({
+                                    title: 'Delete file',
+                                    text: "Are you sure you want to delete <b>" + name + "</b>?",
+                                    type: 'warning',
+                                    showCancelButton: true,
+                                    showLoaderOnConfirm: true,
+                                    confirmButtonText: 'Yes, delete it!',
+                                    preConfirm: function(){
+                                        return new Promise(function( res, rej){
+                                            return $.ajax({
+                                                url: 'http://localhost:4567/file/delete',
+                                                type: 'POST',
+                                                data: {"path": d.path}
+                                            }).done(function(){
+                                                res();
+                                            });
+                                        });
+                                    }
+                                }).then(function () {
+                                    swal(
+                                        'Deleted!',
+                                        'Your file has been deleted.',
+                                        'success'
+                                    ).then(function(){
+                                        G.removeNode(d.node);
+                                    })
+                                });
+                            });
+                        });
             });
 
             function draw(G){
@@ -153,7 +183,7 @@
                     nodeAttr:{
                         r: function(d){
                             var data = d.data;
-                            if(data.hasOwnProperty("isPath")) return 10;
+                            if(data.hasOwnProperty("isPath")) return 20;
                             return data.size / 550000;
                         }
                     },

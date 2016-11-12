@@ -22,6 +22,9 @@ public class App {
         }, new JsonTransformer<List<HDDVFile>>());
 
         Spark.put("/file/permission", ((request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Content-Type", "application/json");
+
             String path = request.params("path");
             String permission = request.params("permission");
 
@@ -29,8 +32,11 @@ public class App {
             return true;
         }));
 
-        Spark.delete("/file/delete", (request, response) -> {
-            String path = request.params().get("path");
+        Spark.post("/file/delete", (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Content-Type", "application/json");
+
+            String path = request.queryParams("path");
             FileOperator.delete(path);
             return true;
         });
