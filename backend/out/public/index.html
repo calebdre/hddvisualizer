@@ -24,9 +24,9 @@
 
                 <li class="header">Settings</li>
                 <!-- modal options: bubble color, window size,  -->
-                <li>Analysis Interface</li>
+                <li class="disabled">Analysis Interface</li>
                 <!-- modal options: language, font size, boot on start  -->
-                <li>Application</li>
+                <li class="disabled">Application</li>
             </ul>
             <div class="content">
                 <div class="analysis">
@@ -125,20 +125,20 @@
 
                 d3.selectAll(".node")
                         .on("click", function(d){
-                            if(d.hasOwnProperty("isPath")) return;
-                            d = d.data;
-                            var path = d.path.substr(0, d.path.lastIndexOf("/"));
+                            if(d.data.hasOwnProperty("isPath")) return;
+                            data = d.data;
+                            var path = data.path.substr(0, data.path.lastIndexOf("/"));
                             var name = "";
-                            if(d.name.length > 30){
-                                name = d.name.substr(0, 30) + "...";
+                            if(data.name.length > 30){
+                                name = data.name.substr(0, 30) + "...";
                             }else{
-                                name = d.name;
+                                name = data.name;
                             }
                             $('.selected-file-info .name').find('h2').text(name);
                             $('.selected-file-info .dir').find('h2').text(path);
-                            $('.selected-file-info .size').find('h2').text(d.size + "kb");
-                            $('.selected-file-info .modified').find('h2').text(moment.unix(d.dateLastModified / 1000).fromNow());
-                            $('.selected-file-info .proportion').find('h2').text(Math.ceil((d.size / memory) * 100) + "%");
+                            $('.selected-file-info .size').find('h2').text(data.size + "kb");
+                            $('.selected-file-info .modified').find('h2').text(moment.unix(data.dateLastModified / 1000).fromNow());
+                            $('.selected-file-info .proportion').find('h2').text(Math.ceil((data.size / memory) * 100) + "%");
 
                             $('#delete').off().click(function(e){
                                 swal({
@@ -158,14 +158,15 @@
                                                 res();
                                             });
                                         });
-
                                     }
                                 }).then(function () {
                                     swal(
                                         'Deleted!',
                                         'Your file has been deleted.',
                                         'success'
-                                    )
+                                    ).then(function(){
+                                        G.removeNode(d.node);
+                                    })
                                 });
                             });
                         });
