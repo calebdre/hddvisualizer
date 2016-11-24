@@ -152,7 +152,7 @@
 
                             switch (type){
                                 case "size":
-                                        console.log(node)
+                                        console.log(node);
                                     if(data.size < parseInt(value)){
                                         G.removeNode(nodeNum);
                                         console.log("deleted from size");
@@ -171,7 +171,6 @@
                                     }
                                     break;
                             }
-
                         }
                     });
                 });
@@ -211,6 +210,15 @@
                     dirBubbleColor = result;
                     draw(G);
                 })
+            });
+
+            $('#share').click(function(e){
+               swal({
+                   title:"Who would you like to share this with?",
+                   "input": "text",
+                   "inputPlaceholder": "Type their username",
+                   "showCancelButton": true
+               });
             });
 
             $('#window').click(function(e){
@@ -300,6 +308,7 @@
                                 $('.selected-file-info .modified').find('h2').text(moment.unix(data.dateLastModified / 1000).fromNow());
                                 $('.selected-file-info .proportion').find('h2').text(Math.ceil((data.size / memory) * 100) + "%");
 
+                                $('.analysis .analysis .empty').remove();
                                 $("#permission").removeClass("disabled");
                                 $('#delete').removeClass("disabled").off().click(function(e){
                                     swal({
