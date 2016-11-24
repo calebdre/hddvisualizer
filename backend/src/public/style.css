@@ -70,6 +70,13 @@ li{
     padding-left:16px;
 }
 
+.analysis .analysis .empty{
+    color:#bbb;
+    margin-left: 20px;
+    margin-top: 60px;
+    max-width: 400px;
+}
+
 .stats .stat, .selected-file-info .selected-file{
     display:inline-block;
     margin:10px 20px;
