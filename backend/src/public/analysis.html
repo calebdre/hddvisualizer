@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>HDD Visualizer</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/sweetalert2/5.3.2/sweetalert2.min.css">
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div class="clearfix">
+            <ul class="sidebar">
+                <li class="top header">HDD Visualizer</li>
+
+                <li class="header">Analysis</li>
+                <li id="analysis">Start Analysis</li>
+                <li id="filter" class="disabled">Filter</li>
+                <li id="share" class="disabled">Share</li>
+                <li id="periodic" class="disabled">Periodic</li>
+                <li id="delete" class="disabled">Delete File</li>
+                <li id="permission" class="disabled">Change Permissions</li>
+
+                <li class="header">Settings</li>
+                <li id="file-bubble">File Bubble Color</li>
+                <li id="dir-bubble">Directory Bubble Color</li>
+                <li id="window">Window Size</li>
+                <!-- modal options: bubble color, window size,  -->
+                <li id="font">Font Size</li>
+                <!-- modal options: language, font size, boot on start  -->
+                <li class="disabled">Boot on start</li>
+            </ul>
+            <div class="content">
+                <div class="analysis">
+                    <div class="analysis">
+                        <h2 class="empty">Click "Start Analysis" in the action pane to begin</h2>
+                    </div>
+                    <div class="selected-file-info">
+                        <figure class="selected-file name">
+                            <h2>--</h2>
+                            <figcaption>Name</figcaption>
+                        </figure>
+                        <figure class="selected-file dir">
+                            <h2>--</h2>
+                            <figcaption>Directory</figcaption>
+                        </figure>
+
+                        <figure class="selected-file modified">
+                            <h2>--</h2>
+                            <figcaption>Last Used</figcaption>
+                        </figure>
+
+                        <figure class="selected-file size">
+                            <h2>--</h2>
+                            <figcaption>Size</figcaption>
+                        </figure>
+
+                        <figure class="selected-file proportion">
+                            <h2>--</h2>
+                            <figcaption>Proportion</figcaption>
+                        </figure>
+                    </div>
+                    <div class="stats">
+                        <figure class="stat dirs">
+                            <h2>--</h2>
+                            <figcaption>Directories</figcaption>
+                        </figure>
+
+                        <figure class="stat files">
+                            <h2>--</h2>
+                            <figcaption>Files</figcaption>
+                        </figure>
+
+                        <figure class="stat memory">
+                            <h2>--</h2>
+                            <figcaption>Memory</figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+		</div>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+        <script src="https://d3js.org/d3.v3.js"></script>
+        <script src="jsnetworkx.js"></script>
+        <script src="https://cdn.jsdelivr.net/sweetalert2/5.3.2/sweetalert2.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.16.0/moment.min.js"></script>
+		<script src="app.js"></script>
+		<script>
+            var analysisHeightPercent = .8;
+            var statsHeightPercent = 1 - analysisHeightPercent;
+
+            var analysisHeight = window.innerHeight * analysisHeightPercent;
+            var statsHeight = window.innerHeight * statsHeightPercent;
+
+            var shareString;
+
+            var fileBubbleColor = "red";
+            var dirBubbleColor = "blue";
+            var G = new jsnx.Graph();
+
+			$(".analysis .analysis").first().css('min-height', analysisHeight + "px");
+            $('.sidebar').css("height", window.innerHeight + "px");
+
+            $('#analysis').click(function(e){
+               swal({
+                   "title": "Start analysis",
+                   inputPlaceholder: 'Type the path you want to search.',
+                   "input": "text",
+                   "showCancelButton": true
+               }).then(function(path){
+                    startAnalysis(path);
+                    $("#filter").removeClass("disabled");
+                    $("#share").removeClass("disabled");
+                    $("#periodic").removeClass("disabled");
+                    shareString = randomString(5);
+               })
+            });
+
+
+            $("#filter").click(function(e){
+                swal({
+                    "title":"Filter analysis",
+                    "input":"radio",
+                    "showCancelButton": true,
+                    "inputOptions": {
+                        "size": "size",
+                        "name": "name",
+                        "path": "path"
+                    }
+                }).then(function(type){
+                    var placeholder;
+                    switch(type){
+                        case "size":
+                            placeholder = "Type your minimum size in kb";
+                            break;
+                        case "name":
+                            placeholder = "Type the name you would like to filter by";
+                            break;
+                        case "path":
+                            placeholder = "Type the path you'd like to filter by";
+                            break;
+                    }
+                    swal({
+                        title:"filter by " + type,
+                        "input": "text",
+                        "inputPlaceholder": placeholder
+                    }).then(function(value){
+                        var nodes = G.nodes(true);
+                        for(var i = 0; i < nodes.length; i++){
+                            var node = nodes[i];
+                            var nodeNum = node[0];
+                            var data = node[1];
+                            if(data.hasOwnProperty("isPath")){ return; }
+
+                            switch (type){
+                                case "size":
+                                        console.log(node);
+                                    if(data.size < parseInt(value)){
+                                        G.removeNode(nodeNum);
+                                        console.log("deleted from size");
+                                    }
+                                    break;
+                                case "name":
+                                    if(data.name.toLowerCase() === value.toLowerCase()){
+                                        G.removeNode(nodeNum);
+                                        console.log("deleted from name");
+                                    }
+                                    break;
+                                case "path":
+                                    if(data.path.indexOf(value) !== -1){
+                                        G.removeNode(nodeNum);
+                                        console.log("deleted from path");
+                                    }
+                                    break;
+                            }
+                        }
+                    });
+                });
+            });
+
+            $('#file-bubble').click(function(e){
+                swal({
+                    "title":"Change File Bubble color",
+                    "input": "radio",
+                    inputPlaceholder: 'Choose a color',
+                    "showCancelButton": true,
+                    "inputOptions": {
+                        "#ff0000": "red",
+                        "#00ff00": "green",
+                        "#0000ff": "blue",
+                        "#551A8B": "purple",
+                        "#FF31C2": "pink"
+                    }
+                }).then(function(result){
+                    fileBubbleColor = result;
+                    render(G);
+                })
+            });
+
+            $('#dir-bubble').click(function(e){
+                swal({
+                    "title":"Change directory bubble color",
+                    "input": "radio",
+                    inputPlaceholder: 'Choose a color',
+                    "showCancelButton": true,
+                    "inputOptions": {
+                        "#ff0000": "red",
+                        "#00ff00": "green",
+                        "#0000ff": "blue"
+                    }
+                }).then(function(result){
+                    dirBubbleColor = result;
+                    render(G);
+                })
+            });
+
+            $('#share').click(function(e){
+               swal({
+                   title:"Share analysis with friends with this link",
+                   text:"http://hddv.io/share?id=" + shareString
+               });
+            });
+
+            $('#window').click(function(e){
+                swal({
+                    title:"Change the analysis window size",
+                    inputPlaceholder: 'Choose a size',
+                    "input": "range",
+                    "showCancelButton": true,
+                    "inputAttributes":{
+                        min:10,
+                        max:100,
+                        step:1
+                    },
+                    "inputValue": analysisHeightPercent * 100
+                }).then(function(value){
+                    analysisHeightPercent = value / 100;
+                    analysisHeight = window.innerHeight * analysisHeightPercent;
+                    $(".analysis .analysis").first().css('min-height', analysisHeight + "px");
+                })
+            });
+
+            $('#font').click(function(e){
+               swal({
+                   "title":"Change the font size",
+                   inputPlaceholder: 'Choose a size',
+                   "input": "number",
+                   "showCancelButton": true,
+                   "inputAttributes":{
+                       min:1,
+                       max:3,
+                       step:.2
+                   }
+               }).then(function(value){
+                   $('body').css("font-size", value + "em");
+               });
+            });
+
+            function startAnalysis(path){
+                $.get("http://localhost:4567/analyze?path=" + path, function(data){
+                    var edgeData = [];
+                    var numOfdirs = 0;
+                    var numOfFiles = 0;
+                    var memory = 0;
+
+                    for(var i = 0; i < data.length; i++){
+                        var file = data[i];
+                        G.addNode(i, file);
+                        var edgeIndex;
+                        var path = file.path.substr(0, file.path.lastIndexOf("/") + 1);
+                        if(edgeData.indexOf(path) === -1){
+                            numOfdirs++;
+                            edgeIndex = data.length + edgeData.push(path) + 1;
+                            G.addNode(edgeIndex, {
+                                name: path,
+                                isPath: true,
+                                index: edgeIndex
+                            });
+                        }else{
+                            numOfFiles++;
+                            memory += file.size;
+                            edgeIndex = edgeData.indexOf(path) + data.length + 1;
+                        }
+
+                        G.addEdge(i, edgeIndex);
+                    }
+                    $('.analysis .analysis .empty').remove();
+                    render(G);
+
+                    $('.stat.files').find("h2").text(numOfFiles);
+                    $('.stat.dirs').find("h2").text(numOfdirs);
+                    $('.stat.memory').find("h2").text(memory);
+
+                    d3.selectAll(".node")
+                            .on("click", function(d){
+                                if(d.data.hasOwnProperty("isPath")) return;
+                                data = d.data;
+                                var path = data.path.substr(0, data.path.lastIndexOf("/"));
+                                var name = "";
+                                if(data.name.length > 30){
+                                    name = data.name.substr(0, 30) + "...";
+                                }else{
+                                    name = data.name;
+                                }
+                                $('.selected-file-info .name').find('h2').text(name);
+                                $('.selected-file-info .dir').find('h2').text(path);
+                                $('.selected-file-info .size').find('h2').text(data.size + "kb");
+                                $('.selected-file-info .modified').find('h2').text(moment.unix(data.dateLastModified / 1000).fromNow());
+                                $('.selected-file-info .proportion').find('h2').text(Math.ceil((data.size / memory) * 100) + "%");
+
+                                $("#permission").removeClass("disabled");
+                                $('#delete').removeClass("disabled").off().click(function(e){
+                                    swal({
+                                        title: 'Delete file',
+                                        text: "Are you sure you want to delete <b>" + name + "</b>?",
+                                        type: 'warning',
+                                        showCancelButton: true,
+                                        showLoaderOnConfirm: true,
+                                        confirmButtonText: 'Yes, delete it!',
+                                        preConfirm: function(){
+                                            return new Promise(function( res, rej){
+                                                return $.ajax({
+                                                    url: 'http://localhost:4567/file/delete',
+                                                    type: 'POST',
+                                                    data: {"path": d.path}
+                                                }).done(function(){
+                                                    res();
+                                                });
+                                            });
+                                        }
+                                    }).then(function () {
+                                        swal(
+                                                'Deleted!',
+                                                'Your file has been deleted.',
+                                                'success'
+                                        ).then(function(){
+                                            G.removeNode(d.node);
+                                        })
+                                    });
+                                });
+                            });
+                });
+            }
+
+            function render(G){
+                jsnx.draw(G, {
+                    element: ".analysis .analysis",
+                    height: analysisHeight,
+                    withLabels:true,
+                    labels:function(d){
+                      return d.data.name;
+                    },
+                    nodeAttr:{
+                        r: function(d){
+                            var data = d.data;
+                            if(data.hasOwnProperty("isPath")) return 20;
+                            return data.size / 550000;
+                        }
+                    },
+                    nodeStyle:{
+                        fill: function(d){
+                            if(d.data.hasOwnProperty("isPath")){
+                                return dirBubbleColor;
+                            }else{
+                                return fileBubbleColor;
+                            }
+                        }
+                    }
+                });
+            }
+
+            function randomString(len, charSet) {
+                charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                var randomString = '';
+                for (var i = 0; i < len; i++) {
+                    var randomPoz = Math.floor(Math.random() * charSet.length);
+                    randomString += charSet.substring(randomPoz,randomPoz+1);
+                }
+                return randomString;
+            }
+		</script>
+	</body>
+</html>
